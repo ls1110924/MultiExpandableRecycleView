@@ -4,6 +4,8 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
 
+    resourcePrefix "multiexpand_"
+
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25

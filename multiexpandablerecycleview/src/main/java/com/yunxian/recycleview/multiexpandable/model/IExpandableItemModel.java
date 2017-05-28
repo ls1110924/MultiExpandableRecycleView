@@ -41,7 +41,7 @@ public interface IExpandableItemModel {
     boolean isExpanded();
 
     /**
-     * 设置当前组项显示所有子项；如果当前是叶子项，则该方法不会被触发调用
+     * 设置当前组项显示所有子项；如果当前是叶子项，则该方法调用不产生任何效果
      *
      * @param expanded true为展开，否则不展开
      */
@@ -54,6 +54,15 @@ public interface IExpandableItemModel {
      */
     @NonNull
     String getItemViewType();
+
+    /**
+     * 设置在扩展树上坐标
+     *
+     * @param coordinate 坐标
+     */
+    void setCoordinateInExpandableTree(ExpandableNodeCoordinateModel coordinate);
+
+    ExpandableNodeCoordinateModel getCoordinateInExpandableTree();
 
     /**
      * 设置该数据模型在RecycleView上的索引值

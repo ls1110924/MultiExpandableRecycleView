@@ -24,7 +24,7 @@ import java.util.Map;
  * @email ls1110924@gmail.com
  * @date 17/5/19 下午3:41
  */
-public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsMultiExpandableItemViewHolder> {
+public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsMultiExpandableItemViewHolder>implements AbsMultiExpandableItemViewHolder.OnBtnClickListener {
 
     private static final String TAG = MultiExpandableRecycleViewAdapter.class.getSimpleName();
 
@@ -35,8 +35,8 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
     private final List<IExpandableItemModel> mVisibleDataSet = new ArrayList<>();
 
     private final List<String> mItemViewTypeIdMap = new ArrayList<>();
-    private final Map<String, Class<? extends IMultiExpandableItemViewProvider>> mViewHolderProviderClasses = new HashMap<>();
     private final Map<String, IMultiExpandableItemViewProvider> mViewHolderProviders = new HashMap<>();
+    private final Map<String, Class<? extends IMultiExpandableItemViewProvider>> mViewHolderProviderClasses = new HashMap<>();
 
     public MultiExpandableRecycleViewAdapter(@NonNull Context context, @NonNull RecyclerView recyclerView) {
         mContext = context;
@@ -46,6 +46,15 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
         mRecyclerView.setAdapter(this);
     }
 
+    public final void setData(@NonNull List<IExpandableItemModel> dataSet) {
+        mTotalDataSet.addAll(dataSet);
+        rebuildVisibleDataSet();
+    }
+
+    private void rebuildVisibleDataSet() {
+        // TODO 当有节点状态发生变化时，重建可见Item的数据集
+    }
+
     @Override
     public AbsMultiExpandableItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         String itemViewType = mItemViewTypeIdMap.get(viewType);
@@ -53,7 +62,9 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
             throw new IllegalStateException("Plz register itemView provider first!");
         }
         IMultiExpandableItemViewProvider viewProvider = getItemViewProvider(itemViewType);
-        return viewProvider.createViewHolder(mContext, parent);
+        AbsMultiExpandableItemViewHolder viewHolder = viewProvider.createViewHolder(mContext, parent);
+        viewHolder.addOnBtnClickListener(this);
+        return viewHolder;
     }
 
     @Override
@@ -131,4 +142,38 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
         return itemViewProvider;
     }
 
+    @Override
+    public boolean onExpandedBtnClick(@NonNull IExpandableItemModel dataModel) {
+        if (dataModel.isGroup()) {
+            if (dataModel.isExpanded()) {
+                List<IExpandableItemModel> childrenDataModel = new ArrayList<>();
+                for (int i = dataModel.getRecycleViewChildrenIndex() + 1, size = mVisibleDataSet.size(); i < size; i++) {
+                    IExpandableItemModel childDataModel = mVisibleDataSet.get(i);
+                    if (dataModel.getCoordinateInExpandableTree().isChild(childDataModel.getCoordinateInExpandableTree())) {
+                        childrenDataModel.add(childDataModel);
+                    } else {
+                        break;
+                    }
+                }
+                mVisibleDataSet.removeAll(childrenDataModel);
+                notifyItemRangeRemoved(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel.size());
+            } else {
+                List<? extends IExpandableItemModel> childrenDataModel = dataModel.getChildren();
+                if (childrenDataModel != null && childrenDataModel.size() > 0) {
+                    mVisibleDataSet.addAll(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel);
+                    notifyItemRangeInserted(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel.size());
+                } else {
+                    Log.d(TAG, "the leaf dataModel has clicked by expanded btn");
+                }
+            }
+        } else {
+            Log.d(TAG, "the leaf dataModel has clicked by expanded btn");
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onSelectedBtnClick(@NonNull IExpandableItemModel dataModel) {
+        return false;
+    }
 }
