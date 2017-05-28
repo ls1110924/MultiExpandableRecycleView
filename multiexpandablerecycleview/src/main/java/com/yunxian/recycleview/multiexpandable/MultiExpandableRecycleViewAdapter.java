@@ -39,6 +39,8 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
     private final Map<String, IMultiExpandableItemViewProvider> mViewHolderProviders = new HashMap<>();
     private final Map<String, Class<? extends IMultiExpandableItemViewProvider>> mViewHolderProviderClasses = new HashMap<>();
 
+    private final List<OnExpandableItemClickListener> mItemClickListener = new ArrayList<>();
+
     public MultiExpandableRecycleViewAdapter(@NonNull Context context, @NonNull RecyclerView recyclerView) {
         mContext = context;
         mRecyclerView = recyclerView;
@@ -186,6 +188,47 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
 
     @Override
     public boolean onSelectedBtnClick(@NonNull IExpandableItemModel dataModel) {
+        for (OnExpandableItemClickListener listener : mItemClickListener) {
+            listener.onExpandableItemSelected(dataModel, dataModel.getCoordinateInExpandableTree().getCoordinates());
+        }
         return true;
     }
+
+    /**
+     * 注册一个监听器
+     *
+     * @param listener 监听器
+     */
+    public final void addOnExpandableItemClickListener(OnExpandableItemClickListener listener) {
+        if (listener != null && !mItemClickListener.contains(listener)) {
+            mItemClickListener.add(listener);
+        }
+    }
+
+    /**
+     * 反注册一个监听器
+     *
+     * @param listener 监听器
+     */
+    public final void removeOnExpandableItemClickListener(OnExpandableItemClickListener listener) {
+        if (listener != null && mItemClickListener.contains(listener)) {
+            mItemClickListener.remove(listener);
+        }
+    }
+
+    /**
+     * 多级展开RecyclerView的点击监听器
+     */
+    public interface OnExpandableItemClickListener {
+
+        /**
+         * 当某个条目被选择时回调
+         *
+         * @param dataModel  被选中条目的数据模型
+         * @param coordinate 该条目在节点树中的坐标
+         */
+        void onExpandableItemSelected(@NonNull IExpandableItemModel dataModel, @NonNull List<Integer> coordinate);
+
+    }
+
 }

@@ -3,6 +3,7 @@ package com.yunxian.recycleview.multiexpandable.model;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,6 +30,16 @@ public final class ExpandableNodeCoordinateModel {
      */
     public ExpandableNodeCoordinateModel(@NonNull ExpandableNodeCoordinateModel that) {
         mCoordinates.addAll(that.mCoordinates);
+    }
+
+    /**
+     * 获取当前节点所在节点中的详细坐标表示
+     * 注意，返回的坐标列表不可编辑
+     *
+     * @return 坐标
+     */
+    public List<Integer> getCoordinates() {
+        return Collections.unmodifiableList(mCoordinates);
     }
 
     /**
