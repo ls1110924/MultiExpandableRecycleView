@@ -116,4 +116,30 @@ public final class SimpleUtils {
         }
     }
 
+    /**
+     * 重置所有节点在RecyclerView上的索引至默认值（省事）
+     *
+     * @param rootNodes 扩展树的根节点
+     */
+    public static void restoreInvisibleForTotalTree(@Nullable List<IExpandableItemModel> rootNodes) {
+        if (rootNodes != null && rootNodes.size() > 0) {
+            for (IExpandableItemModel node : rootNodes) {
+                node.setRecycleViewChildrenIndex(-1);
+
+                restoreInvisibleForTotalTree(node.getChildren());
+            }
+        }
+    }
+
+    /**
+     * 梳理可见节点在RecyclerView上的索引
+     *
+     * @param visibleNodes 可见节点列表
+     */
+    public static void teaseIndexOfVisibleNodeList(@NonNull List<IExpandableItemModel> visibleNodes) {
+        for (int i = 0, size = visibleNodes.size(); i < size; i++) {
+            visibleNodes.get(i).setRecycleViewChildrenIndex(i);
+        }
+    }
+
 }

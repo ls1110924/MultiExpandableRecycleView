@@ -149,21 +149,30 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
     public boolean onExpandedBtnClick(@NonNull IExpandableItemModel dataModel) {
         if (dataModel.isGroup()) {
             if (dataModel.isExpanded()) {
+                // 如果其子节点已经展开，则折叠其子节点
+                dataModel.setExpanded(false);
+
                 List<IExpandableItemModel> childrenDataModel = new ArrayList<>();
                 for (int i = dataModel.getRecycleViewChildrenIndex() + 1, size = mVisibleDataSet.size(); i < size; i++) {
                     IExpandableItemModel childDataModel = mVisibleDataSet.get(i);
                     if (dataModel.getCoordinateInExpandableTree().isChild(childDataModel.getCoordinateInExpandableTree())) {
+                        childDataModel.setRecycleViewChildrenIndex(-1);
                         childrenDataModel.add(childDataModel);
                     } else {
                         break;
                     }
                 }
                 mVisibleDataSet.removeAll(childrenDataModel);
+                SimpleUtils.teaseIndexOfVisibleNodeList(mVisibleDataSet);
                 notifyItemRangeRemoved(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel.size());
             } else {
+                // 如果其子节点为展开状态，则展开其子节点
+                dataModel.setExpanded(true);
+
                 List<? extends IExpandableItemModel> childrenDataModel = dataModel.getChildren();
                 if (childrenDataModel != null && childrenDataModel.size() > 0) {
                     mVisibleDataSet.addAll(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel);
+                    SimpleUtils.teaseIndexOfVisibleNodeList(mVisibleDataSet);
                     notifyItemRangeInserted(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel.size());
                 } else {
                     Log.d(TAG, "the leaf dataModel has clicked by expanded btn");
@@ -172,11 +181,11 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
         } else {
             Log.d(TAG, "the leaf dataModel has clicked by expanded btn");
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean onSelectedBtnClick(@NonNull IExpandableItemModel dataModel) {
-        return false;
+        return true;
     }
 }

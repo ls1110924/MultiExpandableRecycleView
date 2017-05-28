@@ -22,9 +22,6 @@ import java.util.List;
  */
 public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private int position;
-    private IExpandableItemModel dataModel;
-
     @IdRes
     private final int mRootViewId;
     @ExpandableItemViewNodeType
@@ -123,12 +120,9 @@ public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.View
             throw new IllegalStateException("Plz check childrenIndex in recyclerView by manual");
         }
 
-        this.position = position;
-        this.dataModel = dataModel;
-
         mRootView.setTag(R.id.multiexpand_recycleview_viewholder_tag, dataModel);
         if (mExpandBtnView != null) {
-            mExpandBtnView.setTag(R.id.multiexpand_recycleview_viewholder_tag, null);
+            mExpandBtnView.setTag(R.id.multiexpand_recycleview_viewholder_tag, dataModel);
         }
 
         if (mItemViewNodeType == ExpandableItemViewNodeType.ALL_ITEM) {
@@ -211,13 +205,19 @@ public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.View
     public interface OnBtnClickListener {
 
         /**
-         * 展开监听
+         * 展开或折叠监听
          *
-         * @param dataModel
-         * @return
+         * @param dataModel 触发点击的可展开节点
+         * @return true此事件被消费
          */
         boolean onExpandedBtnClick(@NonNull IExpandableItemModel dataModel);
 
+        /**
+         * 节点选择监听
+         *
+         * @param dataModel 触发点击的可展开节点
+         * @return true此事件被消费
+         */
         boolean onSelectedBtnClick(@NonNull IExpandableItemModel dataModel);
 
     }
