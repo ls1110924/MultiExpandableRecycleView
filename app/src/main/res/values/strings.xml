@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MultiExpandableRecycleView</string>
+
+    <string name="test_multi_expand">测试多级展开</string>
+    <string name="activity_test_multiexpand_title">测试多级展开</string>
+
 </resources>
