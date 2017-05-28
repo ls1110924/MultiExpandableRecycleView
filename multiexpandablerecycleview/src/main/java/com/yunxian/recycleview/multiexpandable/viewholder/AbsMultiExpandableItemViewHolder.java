@@ -154,7 +154,7 @@ public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.View
      * @param position  当前数据模型处于总可见视图的索引值
      * @param dataModel 当前数据模型值
      */
-    abstract void bindData(int position, @NonNull IExpandableItemModel dataModel);
+    protected abstract void bindData(int position, @NonNull IExpandableItemModel dataModel);
 
     @Override
     public final void onClick(View v) {

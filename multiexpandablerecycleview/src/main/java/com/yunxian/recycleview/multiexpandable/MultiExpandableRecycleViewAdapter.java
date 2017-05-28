@@ -54,6 +54,8 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
         // 重新梳理数据集的节点坐标
         SimpleUtils.teaseExpandableTree(mTotalDataSet);
         rebuildVisibleDataSet();
+
+        notifyDataSetChanged();
     }
 
     private void rebuildVisibleDataSet() {
