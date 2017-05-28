@@ -30,7 +30,7 @@ public interface IExpandableItemModel {
      * @return 组项对应的所有子项列表；叶子项返回null
      */
     @Nullable
-    List<? extends IExpandableItemModel> getChildren();
+    List<IExpandableItemModel> getChildren();
 
     /**
      * 如果是组项数据模型，则是否展开显示所有子项；

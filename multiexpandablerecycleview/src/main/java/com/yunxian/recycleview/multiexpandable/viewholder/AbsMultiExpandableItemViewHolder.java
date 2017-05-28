@@ -22,6 +22,9 @@ import java.util.List;
  */
 public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+    private int position;
+    private IExpandableItemModel dataModel;
+
     @IdRes
     private final int mRootViewId;
     @ExpandableItemViewNodeType
@@ -109,13 +112,20 @@ public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.View
     }
 
     /**
-     * 绑定数据
+     * 绑定数据(内部方法)
      *
-     * @param position    当前数据模型处于总可见视图的索引值
-     * @param coordinates 当前数据模型处于总数据集中的坐标
-     * @param dataModel   当前数据模型值
+     * @param position  当前数据模型处于总可见视图的索引值
+     * @param dataModel 当前数据模型值
      */
-    public final void bindData(int position, @NonNull List<Integer> coordinates, @NonNull IExpandableItemModel dataModel) {
+    public final void bindDataInternal(int position, @NonNull IExpandableItemModel dataModel) {
+        // 检查手工配置的索引和系统配置的索引是否一致，理论上应该是一致的
+        if (position != dataModel.getRecycleViewChildrenIndex()) {
+            throw new IllegalStateException("Plz check childrenIndex in recyclerView by manual");
+        }
+
+        this.position = position;
+        this.dataModel = dataModel;
+
         mRootView.setTag(R.id.multiexpand_recycleview_viewholder_tag, dataModel);
         if (mExpandBtnView != null) {
             mExpandBtnView.setTag(R.id.multiexpand_recycleview_viewholder_tag, null);
@@ -126,27 +136,31 @@ public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.View
                 if (mExpandBtnView == null) {
                     throw new NullPointerException("Plz check code, and the current dataModel isn't a groupModel");
                 }
-                // TODO
-            } else {
-                // TODO
             }
         } else if (mItemViewNodeType == ExpandableItemViewNodeType.GROUP_ITEM) {
             if (dataModel.isGroup()) {
                 if (mExpandBtnView == null) {
                     throw new NullPointerException();
                 }
-                // TODO
             } else {
                 throw new IllegalStateException("Plz set correct dataModel with viewHolder");
             }
         } else if (mItemViewNodeType == ExpandableItemViewNodeType.LEAF_ITEM) {
             if (dataModel.isGroup()) {
                 throw new IllegalStateException("Plz set correct dataModel with viewHolder");
-            } else {
-                // TODO
             }
         }
+
+        bindData(position, dataModel);
     }
+
+    /**
+     * 填充数据。供子类实现实现各自自定义
+     *
+     * @param position  当前数据模型处于总可见视图的索引值
+     * @param dataModel 当前数据模型值
+     */
+    abstract void bindData(int position, @NonNull IExpandableItemModel dataModel);
 
     @Override
     public final void onClick(View v) {
@@ -192,7 +206,6 @@ public abstract class AbsMultiExpandableItemViewHolder extends RecyclerView.View
     }
 
     /**
-     *
      * 多级展开Item上的事件监听器，包括选择监听和展开监听
      */
     public interface OnBtnClickListener {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 扩展树上的结点坐标对应的数据模型表示
+ * 扩展树上的节点坐标对应的数据模型表示
  *
  * @author A Shuai
  * @email ls1110924@gmail.com
@@ -16,7 +16,19 @@ public final class ExpandableNodeCoordinateModel {
 
     private final List<Integer> mCoordinates = new ArrayList<>();
 
+    /**
+     * 默认构造方法
+     */
     public ExpandableNodeCoordinateModel() {
+    }
+
+    /**
+     * 复制构造方法
+     *
+     * @param that 被复制的节点坐标对象
+     */
+    public ExpandableNodeCoordinateModel(@NonNull ExpandableNodeCoordinateModel that) {
+        mCoordinates.addAll(that.mCoordinates);
     }
 
     /**

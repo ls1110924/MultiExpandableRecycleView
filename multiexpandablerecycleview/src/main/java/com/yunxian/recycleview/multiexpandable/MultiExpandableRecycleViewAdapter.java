@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.yunxian.recycleview.multiexpandable.model.IExpandableItemModel;
 import com.yunxian.recycleview.multiexpandable.provider.IMultiExpandableItemViewProvider;
+import com.yunxian.recycleview.multiexpandable.utils.SimpleUtils;
 import com.yunxian.recycleview.multiexpandable.viewholder.AbsMultiExpandableItemViewHolder;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.Map;
  * @email ls1110924@gmail.com
  * @date 17/5/19 下午3:41
  */
-public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsMultiExpandableItemViewHolder>implements AbsMultiExpandableItemViewHolder.OnBtnClickListener {
+public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsMultiExpandableItemViewHolder> implements AbsMultiExpandableItemViewHolder.OnBtnClickListener {
 
     private static final String TAG = MultiExpandableRecycleViewAdapter.class.getSimpleName();
 
@@ -48,11 +49,13 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
 
     public final void setData(@NonNull List<IExpandableItemModel> dataSet) {
         mTotalDataSet.addAll(dataSet);
+        // 重新梳理数据集的节点坐标
+        SimpleUtils.teaseExpandableTree(mTotalDataSet);
         rebuildVisibleDataSet();
     }
 
     private void rebuildVisibleDataSet() {
-        // TODO 当有节点状态发生变化时，重建可见Item的数据集
+        mVisibleDataSet.addAll(SimpleUtils.buildVisibleExpandableNodeList(mTotalDataSet));
     }
 
     @Override
@@ -69,7 +72,7 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
 
     @Override
     public void onBindViewHolder(AbsMultiExpandableItemViewHolder holder, int position) {
-        holder.bindData(position, new ArrayList<Integer>(), mVisibleDataSet.get(position));
+        holder.bindDataInternal(position, mVisibleDataSet.get(position));
     }
 
     @Override
