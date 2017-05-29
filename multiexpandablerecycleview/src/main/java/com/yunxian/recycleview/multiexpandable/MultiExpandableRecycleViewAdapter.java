@@ -168,6 +168,7 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
                 }
                 mVisibleDataSet.removeAll(childrenDataModel);
                 SimpleUtils.teaseIndexOfVisibleNodeList(mVisibleDataSet);
+                notifyItemChanged(dataModel.getRecycleViewChildrenIndex());
                 notifyItemRangeRemoved(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel.size());
             } else {
                 // 如果其子节点为展开状态，则展开其子节点
@@ -177,6 +178,7 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
                 if (childrenDataModel != null && childrenDataModel.size() > 0) {
                     mVisibleDataSet.addAll(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel);
                     SimpleUtils.teaseIndexOfVisibleNodeList(mVisibleDataSet);
+                    notifyItemChanged(dataModel.getRecycleViewChildrenIndex());
                     notifyItemRangeInserted(dataModel.getRecycleViewChildrenIndex() + 1, childrenDataModel.size());
                 } else {
                     Log.d(TAG, "the leaf dataModel has clicked by expanded btn");
