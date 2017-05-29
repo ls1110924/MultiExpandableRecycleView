@@ -15,6 +15,8 @@ import com.yunxian.recycleview.multiexpandable.sample.adapter.provider.EmployPro
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Stack;
 
 /**
  * 测试RecyclerView的多级展开功能页面
@@ -44,27 +46,58 @@ public class TestMultiExpandableActivity extends AppCompatActivity {
 
     private List<IExpandableItemModel> mockData() {
 
+        final int maxLevel = 5;
+
         List<IExpandableItemModel> itemModels = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        Random random = new Random();
 
         for (int i = 0, size = 5; i < size; i++) {
+            stack.push(i);
+
             Employee employee = new Employee();
             employee.setName(String.format(Locale.getDefault(), "Name-->%d", i));
-            List<Employee> children = randSubordinate(i);
+            employee.setExpanded(random.nextBoolean());
+            List<Employee> children = randSubordinate(random, stack, 4);
             employee.setSubordinate(children);
             itemModels.add(employee);
+
+            stack.pop();
         }
         return itemModels;
 
     }
 
-    private static List<Employee> randSubordinate(int index) {
+    private static List<Employee> randSubordinate(Random random, Stack<Integer> indexStack, int level) {
+        int nodesNum = Math.max(1, random.nextInt(5));
         List<Employee> itemModels = new ArrayList<>();
-        for (int i = 0, size = 3; i < size; i++) {
+        for (int i = 0; i < nodesNum; i++) {
+            indexStack.push(i);
+
             Employee employee = new Employee();
-            employee.setName(String.format(Locale.getDefault(), "Name-->%d--%d", index, i));
+            employee.setName(buildNodeName(indexStack));
+            employee.setExpanded(random.nextBoolean());
+
+            // 递归生辰子节点
+            if (level > 0) {
+                employee.setSubordinate(randSubordinate(random, indexStack, level - 1));
+            }
+
             itemModels.add(employee);
+
+            indexStack.pop();
         }
         return itemModels;
+    }
+
+    private static String buildNodeName(Stack<Integer> integerStack) {
+        StringBuilder stringBuilder = new StringBuilder("Name-->");
+        Integer[] indexArray = integerStack.toArray(new Integer[0]);
+        stringBuilder.append(indexArray[0]);
+        for (int i = 1; i < indexArray.length; i++) {
+            stringBuilder.append('-').append(indexArray[i]);
+        }
+        return stringBuilder.toString();
     }
 
     private class CommonCallbackListener implements MultiExpandableRecycleViewAdapter.OnExpandableItemClickListener {
