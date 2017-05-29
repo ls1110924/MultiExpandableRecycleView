@@ -160,6 +160,7 @@ public class MultiExpandableRecycleViewAdapter extends RecyclerView.Adapter<AbsM
                 for (int i = dataModel.getRecycleViewChildrenIndex() + 1, size = mVisibleDataSet.size(); i < size; i++) {
                     IExpandableItemModel childDataModel = mVisibleDataSet.get(i);
                     if (dataModel.getCoordinateInExpandableTree().isChild(childDataModel.getCoordinateInExpandableTree())) {
+                        childDataModel.setExpanded(false);
                         childDataModel.setRecycleViewChildrenIndex(-1);
                         childrenDataModel.add(childDataModel);
                     } else {
